@@ -1,0 +1,34 @@
+@import './tokens.css';
+@import './reset.css';
+
+.setup-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.setup-card {
+  width: min(100%, 560px);
+  padding: 32px;
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.setup-card h1 {
+  margin: 4px 0 12px;
+}
+
+.setup-card p {
+  color: var(--color-text-subdued);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--color-accent) !important;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

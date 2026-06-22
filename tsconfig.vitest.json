@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.app.json",
+  "include": ["tests/**/*.ts", "env.d.ts"],
+  "exclude": [],
+  "compilerOptions": {
+    "lib": [],
+    "types": ["node", "jsdom", "@testing-library/jest-dom"],
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo"
+  }
+}
