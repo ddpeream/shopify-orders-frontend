@@ -5,14 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "npm run type-check && npm run build-only",
     "build-only": "vite build",
     "preview": "vite preview",
     "type-check": "vue-tsc --build",
-    "lint": "run-s lint:oxlint lint:eslint",
+    "lint": "npm run lint:oxlint && npm run lint:eslint",
     "lint:oxlint": "oxlint .",
     "lint:eslint": "eslint . --cache",
-    "lint:fix": "run-s lint:oxlint:fix lint:eslint:fix",
+    "lint:fix": "npm run lint:oxlint:fix && npm run lint:eslint:fix",
     "lint:oxlint:fix": "oxlint . --fix",
     "lint:eslint:fix": "eslint . --fix --cache",
     "format": "prettier --write .",
@@ -22,7 +22,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "verify": "run-s format:check lint type-check test:coverage build"
+    "verify": "npm run format:check && npm run lint && npm run type-check && npm run test:coverage && npm run build-only"
   },
   "dependencies": {
     "@lucide/vue": "^1.21.0",
@@ -53,7 +53,6 @@
     "jiti": "^2.7.0",
     "jsdom": "^29.1.1",
     "msw": "^2.14.6",
-    "npm-run-all2": "^8.0.4",
     "oxlint": "~1.69.0",
     "prettier": "3.8.4",
     "typescript": "~6.0.0",
