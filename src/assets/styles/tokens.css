@@ -1,11 +1,123 @@
 :root {
-  --color-background: #f1f2f4;
+  /* Base */
+  --color-background: #f1f1f1;
+  --color-background-subdued: #f7f7f7;
   --color-surface: #ffffff;
+  --color-surface-subdued: #f9fafb;
+  --color-surface-hover: #f6f6f7;
+  --color-surface-active: #ededed;
+
+  /* Text */
   --color-text: #202223;
   --color-text-subdued: #6d7175;
-  --color-accent: #008060;
-  --radius-card: 12px;
+  --color-text-muted: #8c9196;
+  --color-text-inverse: #ffffff;
+
+  /* Border */
+  --color-border: #d0d5dd;
+  --color-border-subdued: #e1e3e5;
+  --color-border-strong: #babfc3;
+
+  /* Brand / primary */
+  --color-primary: #008060;
+  --color-primary-hover: #006e52;
+  --color-primary-active: #005e46;
+  --color-primary-subdued: #e3f1df;
+  --color-focus: #005bd3;
+
+  /* Semantic */
+  --color-success: #008060;
+  --color-success-subdued: #e3f1df;
+  --color-success-border: #95c9a2;
+
+  --color-warning: #b98900;
+  --color-warning-subdued: #fff4d6;
+  --color-warning-border: #e1b878;
+
+  --color-critical: #d72c0d;
+  --color-critical-subdued: #fff4f4;
+  --color-critical-border: #fed3d1;
+
+  --color-info: #2c6ecb;
+  --color-info-subdued: #eef4ff;
+  --color-info-border: #a4cafe;
+
+  --color-neutral-subdued: #f2f4f7;
+  --color-neutral-border: #d0d5dd;
+
+  /* Order statuses */
+  --color-status-received-bg: #eef4ff;
+  --color-status-received-text: #174ea6;
+  --color-status-received-border: #a4cafe;
+
+  --color-status-queued-bg: #fff4d6;
+  --color-status-queued-text: #7a5b00;
+  --color-status-queued-border: #e1b878;
+
+  --color-status-processing-bg: #f4ebff;
+  --color-status-processing-text: #6b21a8;
+  --color-status-processing-border: #d6bbfb;
+
+  --color-status-processed-bg: #e3f1df;
+  --color-status-processed-text: #005e46;
+  --color-status-processed-border: #95c9a2;
+
+  --color-status-failed-bg: #fff4f4;
+  --color-status-failed-text: #b42318;
+  --color-status-failed-border: #fed3d1;
+
+  /* Spacing */
+  --space-025: 2px;
+  --space-050: 4px;
+  --space-100: 8px;
+  --space-150: 12px;
+  --space-200: 16px;
+  --space-300: 24px;
+  --space-400: 32px;
+  --space-500: 40px;
+  --space-600: 48px;
+
+  /* Radius */
+  --radius-050: 4px;
+  --radius-100: 6px;
+  --radius-150: 8px;
+  --radius-200: 12px;
+  --radius-300: 16px;
+  --radius-pill: 999px;
+  --radius-card: var(--radius-200);
+
+  /* Shadow */
   --shadow-card: 0 1px 0 rgb(0 0 0 / 5%), 0 1px 3px rgb(0 0 0 / 10%);
+  --shadow-popover: 0 8px 24px rgb(0 0 0 / 12%);
+  --shadow-focus: 0 0 0 3px rgb(0 91 211 / 25%);
+
+  /* Typography */
   --font-sans:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --font-size-075: 0.75rem;
+  --font-size-087: 0.875rem;
+  --font-size-100: 1rem;
+  --font-size-125: 1.25rem;
+  --font-size-150: 1.5rem;
+  --font-size-200: 2rem;
+
+  --line-height-tight: 1.2;
+  --line-height-base: 1.5;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Layout */
+  --layout-page-max-width: 1180px;
+  --layout-sidebar-width: 240px;
+  --layout-header-height: 64px;
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
 }
