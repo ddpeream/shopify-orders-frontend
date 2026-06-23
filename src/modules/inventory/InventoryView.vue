@@ -1,30 +1,141 @@
 <script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+
+import AppAlert from '@/shared/components/AppAlert.vue'
 import AppButton from '@/shared/components/AppButton.vue'
 import AppCard from '@/shared/components/AppCard.vue'
-import AppTable from '@/shared/components/AppTable.vue'
 import PageHeader from '@/shared/components/PageHeader.vue'
+import { environment } from '@/shared/config/environment'
+import { formatDateTime } from '@/shared/utils/date-format'
+
+import InventoryMobileList from './components/InventoryMobileList.vue'
+import InventoryTable from './components/InventoryTable.vue'
+import LowStockFilter from './components/LowStockFilter.vue'
+import { useInventoryStore } from './inventory.store'
+
+const inventoryStore = useInventoryStore()
+
+const {
+  visibleMaterials,
+  lowStockMaterials,
+  showOnlyLowStock,
+  isLoading,
+  isRefreshing,
+  error,
+  lastUpdatedAt,
+} = storeToRefs(inventoryStore)
+
+let pollingTimer: number | null = null
+
+const emptyTitle = computed(() =>
+  showOnlyLowStock.value ? 'No hay materiales en stock bajo' : 'No hay materiales registrados',
+)
+
+const emptyDescription = computed(() =>
+  showOnlyLowStock.value
+    ? 'Todos los materiales están por encima del umbral configurado.'
+    : 'El inventario aún no tiene materiales disponibles para mostrar.',
+)
+
+function startPolling(): void {
+  stopPolling()
+
+  pollingTimer = window.setInterval(() => {
+    void inventoryStore.refreshInventory()
+  }, environment.pollingIntervalMs)
+}
+
+function stopPolling(): void {
+  if (pollingTimer === null) return
+
+  window.clearInterval(pollingTimer)
+  pollingTimer = null
+}
+
+async function handleRefresh(): Promise<void> {
+  await inventoryStore.refreshInventory()
+}
+
+function handleLowStockFilterChange(value: boolean): void {
+  inventoryStore.setShowOnlyLowStock(value)
+}
+
+onMounted(async () => {
+  await inventoryStore.fetchInventory()
+  startPolling()
+})
+
+onBeforeUnmount(() => {
+  stopPolling()
+  inventoryStore.cancelActiveRequest()
+})
 </script>
 
 <template>
-  <section class="app-stack">
+  <section class="inventory-view app-stack">
     <PageHeader
-      title="Inventario"
-      description="Monitorea el stock de materiales de empaque y sus niveles críticos."
+      title="Inventario de materiales"
+      description="Consulta el stock disponible para cajas, etiquetas, cinta y materiales de relleno."
     >
       <template #actions>
-        <AppButton variant="secondary">Actualizar</AppButton>
+        <AppButton variant="secondary" :loading="isRefreshing" @click="handleRefresh">
+          Actualizar
+        </AppButton>
+      </template>
+
+      <template #meta>
+        <span v-if="lastUpdatedAt">Última actualización: {{ formatDateTime(lastUpdatedAt) }}</span>
+        <span v-else>Sin actualización reciente</span>
       </template>
     </PageHeader>
 
-    <AppCard
-      title="Materiales de empaque"
-      description="La información real del inventario se conectará desde el endpoint administrativo."
+    <AppAlert v-if="error" variant="error" title="No fue posible cargar el inventario">
+      {{ error }}
+
+      <template #actions>
+        <AppButton variant="secondary" size="small" @click="inventoryStore.fetchInventory()">
+          Reintentar
+        </AppButton>
+      </template>
+    </AppAlert>
+
+    <AppAlert
+      v-if="lowStockMaterials.length > 0"
+      variant="warning"
+      title="Hay materiales con stock bajo"
     >
-      <AppTable
-        :columns="['Material', 'Código', 'Stock', 'Umbral bajo', 'Estado']"
-        empty
-        empty-title="Inventario sin cargar"
-        empty-description="Cuando se conecte la API, aquí aparecerán cajas, etiquetas, cinta y relleno."
+      {{ lowStockMaterials.length }} material(es) están por debajo o cerca del umbral configurado.
+    </AppAlert>
+
+    <AppCard
+      title="Filtros"
+      description="Alterna entre el inventario completo y los materiales con alerta de stock bajo."
+    >
+      <LowStockFilter
+        :model-value="showOnlyLowStock"
+        :low-stock-count="lowStockMaterials.length"
+        :disabled="isLoading || isRefreshing"
+        @update:model-value="handleLowStockFilterChange"
+      />
+    </AppCard>
+
+    <AppCard
+      title="Materiales"
+      description="Inventario de solo lectura sincronizado con el backend operativo."
+    >
+      <InventoryTable
+        :materials="visibleMaterials"
+        :loading="isLoading"
+        :empty-title="emptyTitle"
+        :empty-description="emptyDescription"
+      />
+
+      <InventoryMobileList
+        :materials="visibleMaterials"
+        :loading="isLoading"
+        :empty-title="emptyTitle"
+        :empty-description="emptyDescription"
       />
     </AppCard>
   </section>
