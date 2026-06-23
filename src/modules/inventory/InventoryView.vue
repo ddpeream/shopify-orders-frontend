@@ -6,6 +6,7 @@ import AppAlert from '@/shared/components/AppAlert.vue'
 import AppButton from '@/shared/components/AppButton.vue'
 import AppCard from '@/shared/components/AppCard.vue'
 import PageHeader from '@/shared/components/PageHeader.vue'
+import { usePolling } from '@/shared/composables/usePolling'
 import { environment } from '@/shared/config/environment'
 import { formatDateTime } from '@/shared/utils/date-format'
 
@@ -26,8 +27,6 @@ const {
   lastUpdatedAt,
 } = storeToRefs(inventoryStore)
 
-let pollingTimer: number | null = null
-
 const emptyTitle = computed(() =>
   showOnlyLowStock.value ? 'No hay materiales en stock bajo' : 'No hay materiales registrados',
 )
@@ -38,21 +37,6 @@ const emptyDescription = computed(() =>
     : 'El inventario aún no tiene materiales disponibles para mostrar.',
 )
 
-function startPolling(): void {
-  stopPolling()
-
-  pollingTimer = window.setInterval(() => {
-    void inventoryStore.refreshInventory()
-  }, environment.pollingIntervalMs)
-}
-
-function stopPolling(): void {
-  if (pollingTimer === null) return
-
-  window.clearInterval(pollingTimer)
-  pollingTimer = null
-}
-
 async function handleRefresh(): Promise<void> {
   await inventoryStore.refreshInventory()
 }
@@ -61,13 +45,18 @@ function handleLowStockFilterChange(value: boolean): void {
   inventoryStore.setShowOnlyLowStock(value)
 }
 
+const inventoryPolling = usePolling({
+  intervalMs: environment.pollingIntervalMs,
+  callback: () => inventoryStore.refreshInventory(),
+})
+
 onMounted(async () => {
   await inventoryStore.fetchInventory()
-  startPolling()
+  inventoryPolling.start()
 })
 
 onBeforeUnmount(() => {
-  stopPolling()
+  inventoryPolling.stop()
   inventoryStore.cancelActiveRequest()
 })
 </script>

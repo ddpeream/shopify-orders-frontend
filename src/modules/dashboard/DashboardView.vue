@@ -7,6 +7,7 @@ import AppButton from '@/shared/components/AppButton.vue'
 import EmptyState from '@/shared/components/EmptyState.vue'
 import PageHeader from '@/shared/components/PageHeader.vue'
 import SkeletonLoader from '@/shared/components/SkeletonLoader.vue'
+import { usePolling } from '@/shared/composables/usePolling'
 import { environment } from '@/shared/config/environment'
 import { formatDateTime } from '@/shared/utils/date-format'
 import { formatInteger } from '@/shared/utils/number-format'
@@ -20,8 +21,6 @@ import { useDashboardStore } from './dashboard.store'
 const dashboardStore = useDashboardStore()
 
 const { summary, isLoading, isRefreshing, error, lastUpdatedAt } = storeToRefs(dashboardStore)
-
-let pollingTimer: number | null = null
 
 const hasOrders = computed(() => (summary.value?.orders.total ?? 0) > 0)
 
@@ -51,22 +50,10 @@ const orderStatusCounts = computed(() => {
   }
 })
 
-function startPolling(): void {
-  stopPolling()
-
-  pollingTimer = window.setInterval(() => {
-    if (document.hidden) return
-
-    void dashboardStore.refreshSummary()
-  }, environment.pollingIntervalMs)
-}
-
-function stopPolling(): void {
-  if (pollingTimer === null) return
-
-  window.clearInterval(pollingTimer)
-  pollingTimer = null
-}
+const summaryPolling = usePolling({
+  intervalMs: environment.pollingIntervalMs,
+  callback: () => dashboardStore.refreshSummary(),
+})
 
 async function handleRefresh(): Promise<void> {
   await dashboardStore.refreshSummary()
@@ -74,11 +61,11 @@ async function handleRefresh(): Promise<void> {
 
 onMounted(() => {
   void dashboardStore.loadSummary()
-  startPolling()
+  summaryPolling.start()
 })
 
 onBeforeUnmount(() => {
-  stopPolling()
+  summaryPolling.stop()
   dashboardStore.cancelActiveRequest()
 })
 </script>

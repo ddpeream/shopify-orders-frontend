@@ -1,19 +1,11 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 
-import { isApiError } from '@/shared/api/api-error'
+import { getApiErrorMessage } from '@/shared/api/api-error-message'
 
 import { listInventory, listLowStockInventory } from './inventory.service'
 
 import type { InventoryItem } from './inventory.types'
-
-function getErrorMessage(error: unknown): string {
-  if (isApiError(error)) return error.message
-
-  if (error instanceof Error) return error.message
-
-  return 'No fue posible cargar el inventario.'
-}
 
 function sortItemsByRisk(items: InventoryItem[]): InventoryItem[] {
   return [...items].sort((first, second) => {
@@ -85,7 +77,7 @@ export const useInventoryStore = defineStore('inventory', () => {
       if (controller.signal.aborted) return
       if (currentRequest !== requestSequence) return
 
-      error.value = getErrorMessage(requestError)
+      error.value = getApiErrorMessage(requestError, 'No fue posible cargar el inventario.')
     } finally {
       if (activeController === controller) {
         activeController = null

@@ -2,18 +2,11 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 
 import { isApiError } from '@/shared/api/api-error'
+import { getApiErrorMessage } from '@/shared/api/api-error-message'
 
 import { getOrderDetail, getOrderMaterials } from './orders.service'
 
 import type { OrderDetail, OrderMaterialsResponse } from './order.types'
-
-function getErrorMessage(error: unknown): string {
-  if (isApiError(error)) return error.message
-
-  if (error instanceof Error) return error.message
-
-  return 'No fue posible cargar el detalle de la orden.'
-}
 
 function isNotFoundError(error: unknown): boolean {
   return isApiError(error) && error.status === 404
@@ -83,14 +76,20 @@ export const useOrderDetailStore = defineStore('order-detail', () => {
           materials.value = null
         }
 
-        detailError.value = getErrorMessage(orderResponse.reason)
+        detailError.value = getApiErrorMessage(
+          orderResponse.reason,
+          'No fue posible cargar el detalle de la orden.',
+        )
       }
 
       if (materialsResponse.status === 'fulfilled') {
         materials.value = materialsResponse.value
       } else {
         materials.value = null
-        materialsError.value = getErrorMessage(materialsResponse.reason)
+        materialsError.value = getApiErrorMessage(
+          materialsResponse.reason,
+          'No fue posible cargar los materiales de la orden.',
+        )
       }
 
       if (orderResponse.status === 'fulfilled') {

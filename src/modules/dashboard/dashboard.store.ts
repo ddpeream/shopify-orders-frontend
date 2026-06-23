@@ -1,19 +1,11 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 
-import { isApiError } from '@/shared/api/api-error'
+import { getApiErrorMessage } from '@/shared/api/api-error-message'
 
 import { getDashboardSummary } from './dashboard.service'
 
 import type { DashboardSummary } from './dashboard.types'
-
-function getErrorMessage(error: unknown): string {
-  if (isApiError(error)) return error.message
-
-  if (error instanceof Error) return error.message
-
-  return 'No fue posible cargar el resumen del dashboard.'
-}
 
 export const useDashboardStore = defineStore('dashboard', () => {
   const summary = ref<DashboardSummary | null>(null)
@@ -55,7 +47,10 @@ export const useDashboardStore = defineStore('dashboard', () => {
     } catch (requestError) {
       if (controller.signal.aborted) return
 
-      error.value = getErrorMessage(requestError)
+      error.value = getApiErrorMessage(
+        requestError,
+        'No fue posible cargar el resumen del dashboard.',
+      )
 
       if (!summary.value) {
         lastUpdatedAt.value = null

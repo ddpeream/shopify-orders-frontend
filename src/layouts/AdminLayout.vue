@@ -4,8 +4,10 @@ import { RouterView } from 'vue-router'
 
 import AppSidebar from '@/shared/components/AppSidebar.vue'
 import AppTopbar from '@/shared/components/AppTopbar.vue'
+import { useOnlineStatus } from '@/shared/composables/useOnlineStatus'
 
 const isMobileMenuOpen = ref(false)
+const { isOnline, statusLabel } = useOnlineStatus()
 
 function openMobileMenu(): void {
   isMobileMenuOpen.value = true
@@ -29,7 +31,9 @@ function closeMobileMenu(): void {
     />
 
     <div class="admin-layout__content">
-      <AppTopbar @toggle-menu="openMobileMenu" />
+      <AppTopbar @toggle-menu="openMobileMenu">
+        <ConnectionStatus :online="isOnline" :label="statusLabel" />
+      </AppTopbar>
 
       <main id="main-content" class="admin-layout__main" tabindex="-1">
         <RouterView />
