@@ -20,6 +20,6 @@ describe('App', () => {
       },
     })
 
-    expect(screen.getByRole('heading', { name: 'Frontend configurado' })).toBeVisible()
+    expect(screen.getByRole('heading', { name: 'Dashboard operativo' })).toBeVisible()
   })
 })
